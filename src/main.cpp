@@ -152,8 +152,9 @@ int main() {
     // Create a player and initialize it
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
+    Enemy enemy = Enemy(-30,22);
 
-    bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
+    // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
     bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
 
     while(true) {
