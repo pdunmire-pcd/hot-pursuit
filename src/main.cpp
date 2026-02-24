@@ -134,6 +134,15 @@ class Player {
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
 };
 
+class Enemy {
+    public:
+        Enemy() :
+        
+
+
+     
+}
+
 int main() {
     bn::core::init();
 
