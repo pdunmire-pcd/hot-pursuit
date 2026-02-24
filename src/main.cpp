@@ -136,17 +136,14 @@ class Player {
 
 class Enemy {
     public:
-        Enemy(int starting_x, int starting_y, bn::size enemy_size) :
-        sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
-        size(enemy_size),
-        bounding_box(create_bounding_box(sprite, size))
-        {}
+        Enemy() :
+        sprite(bn::sprite_ptr::square.create_sprite(starting_x, starting_y)),
+        size(ENEMY_SIZE),
 
-        bn::sprite_ptr sprite; // The sprite for the enemy
-        bn::size size; // The width and height of the sprite
-        bn::rect bounding_box; // The rectangle around the sprite for checking collision
 
-};
+
+     
+}
 
 int main() {
     bn::core::init();
@@ -157,10 +154,10 @@ int main() {
     // Create a player and initialize it
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
-    Enemy enemy = Enemy(-60,2, ENEMY_SIZE);
+    Enemy enemy = Enemy(-30,22);
 
     // bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
-    // bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
+    bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
 
     while(true) {
         player.update();
