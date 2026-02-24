@@ -1,2 +1,5 @@
 # hot-pursuit
 A project to explore classes in C++. See instructions [here](./instructions.md)
+
+GITHUB PAGES:
+https://pdunmire-pcd.github.io/hot-pursuit/
