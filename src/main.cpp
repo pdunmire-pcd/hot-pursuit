@@ -136,7 +136,7 @@ class Player {
 
 class Enemy {
     public:
-        Enemy() :
+        Enemy(int starting_x, int starting_y, bn::fixed enemy_size) :
         sprite(bn::sprite_ptr::square.create_sprite(starting_x, starting_y)),
         size(ENEMY_SIZE),
 
