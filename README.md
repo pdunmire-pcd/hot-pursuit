@@ -2,6 +2,6 @@
 A project to explore classes in C++. See instructions [here](./instructions.md)
 
 
-[github pages](https://pdunmire-pcd.github.io/hot-pursuit/)
+[Play Here](https://pdunmire-pcd.github.io/hot-pursuit/)
 
 
