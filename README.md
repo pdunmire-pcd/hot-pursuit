@@ -1,2 +1,2 @@
-# gba-scenic-route-env
-A template for a base environment to use with the GBA Scenic Route.
+# hot-pursuit
+A project to explore classes in C++. See instructions [here](./instructions.md)
