@@ -116,7 +116,7 @@ class Player {
             if(bn::keypad::left_held()) {
                 sprite.set_x(sprite.x() - speed);
             }
-            // TODO: Add logic for up and down
+            //logic for up and down
                 if(bn::keypad::up_held()) {
                     sprite.set_y(sprite.y() - speed);
                 }
