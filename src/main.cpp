@@ -140,12 +140,12 @@ class Enemy {
         sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
         size(enemy_size),
         bounding_box(create_bounding_box(sprite, size))
-    {}
+        {}
 
-    // Create the sprite. This will be moved to a constructor
-        bn::sprite_ptr sprite = bn::sprite_items::square.create_sprite();
+        bn::sprite_ptr sprite= bn::sprite_items::square.create_sprite(); // The sprite for the enemy
         bn::size size; // The width and height of the sprite
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
+
 };
 
 int main() {
