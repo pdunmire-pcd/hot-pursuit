@@ -76,6 +76,14 @@
 1. make/test
 1. add/commit/push
 
+## Wave 7.5 Refactoring
+1. Refactor your code into separate files.
+    - There should be NO class or function declarations in `main.cpp` other than `int main()`
+    - There should be one `.cpp` and `.h` per class
+    - There should be NO implementaion in the `.h` files, only declarations
+    - Remember to have include guards in your headers!
+1. make/test and add/commit/push as you go! There should be at least one commit per class.
+
 ## Wave 8: Prettifying
 1. Modify the sprites to make them more interesting.
 1. make/test
