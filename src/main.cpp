@@ -118,12 +118,28 @@ class Player {
                 sprite.set_x(sprite.x() - speed);
             }
             //logic for up and down
-                if(bn::keypad::up_held()) {
-                    sprite.set_y(sprite.y() - speed);
-                }
-                if(bn::keypad::down_held()) {
-                    sprite.set_y(sprite.y() + speed);
-                }
+            if(bn::keypad::up_held()) {
+                sprite.set_y(sprite.y() - speed);
+            }
+            if(bn::keypad::down_held()) {
+                sprite.set_y(sprite.y() + speed);
+            }
+
+            // logic for keeping player on the screen
+            bn::fixed half_w = bn::fixed(size.width() / 2);
+            bn::fixed half_h = bn::fixed(size.height() / 2);
+
+            if(sprite.x() < MIN_X + half_w)
+            sprite.set_x(MIN_X + half_w);
+
+            if(sprite.x() > MAX_X - half_w)
+            sprite.set_x(MAX_X - half_w);
+
+            if(sprite.y() < MIN_Y + half_h)
+            sprite.set_y(MIN_Y + half_h);
+
+            if(sprite.y() > MAX_Y - half_h)
+            sprite.set_y(MAX_Y - half_h);
 
             bounding_box = create_bounding_box(sprite, size);
         }
