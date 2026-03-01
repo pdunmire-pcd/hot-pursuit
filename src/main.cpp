@@ -137,8 +137,9 @@ class Player {
 
 class Enemy {
     public:
-        Enemy(int starting_x, int starting_y, bn::size enemy_size) :
+        Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size) :
         sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
+        speed(enemy_speed),
         size(enemy_size),
         bounding_box(create_bounding_box(sprite, size)),
         rng()
@@ -163,9 +164,30 @@ class Enemy {
          // Update bounding box after moving
         bounding_box = create_bounding_box(sprite, size);
 
-        bn::sprite_ptr sprite= bn::sprite_items::square.create_sprite(); // The sprite for the enemy
+            // If it catches player, jump to random position
+        if(bounding_box.intersects(player.bounding_box)) {
+            jump_random();
+        }
+    }
+
+        void jump_random() {
+        // Butano display coords are centered: [-width/2, width/2], [-height/2, height/2]
+        int new_x = rng.get_int(MIN_X, MAX_X + 1);
+        int new_y = rng.get_int(MIN_Y, MAX_Y + 1);
+
+        sprite.set_x(new_x);
+        sprite.set_y(new_y);
+
+        bounding_box = create_bounding_box(sprite, size);
+    }
+
+        bn::sprite_ptr sprite;
+        bn::fixed speed; // The speed of the enemy
         bn::size size; // The width and height of the sprite
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
+
+        private:
+    bn::random rng; // Random number generator for jumping to random location when catching player
 
 };
 
@@ -178,10 +200,11 @@ int main() {
     // Create a player and initialize it
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
-    Enemy enemy = Enemy(-30, 22, ENEMY_SIZE);
+    Enemy enemy = Enemy(-30, 22, bn::fixed(1.5), ENEMY_SIZE);
 
     while(true) {
         player.update();
+        enemy.update(player);
 
         // Reset the current score and player position if the player collides with enemy
         if(enemy.bounding_box.intersects(player.bounding_box)) {
