@@ -129,7 +129,7 @@ class Player {
         }
 
         // Create the sprite. This will be moved to a constructor
-        bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
+        bn::sprite_ptr sprite;
         bn::fixed speed; // The speed of the player
         bn::size size; // The width and height of the sprite
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
@@ -145,8 +145,11 @@ class Enemy {
         rng()
         {}
 
+        bool caught_player = false;
+
          // Move toward player, update bounding box, and jump when catching player
     void update(Player& player) {
+        caught_player = false;
         // Move in x direction toward player
         if(sprite.x() < player.sprite.x()) {
             sprite.set_x(sprite.x() + speed);
@@ -164,14 +167,14 @@ class Enemy {
          // Update bounding box after moving
         bounding_box = create_bounding_box(sprite, size);
 
-            // If it catches player, jump to random position
+        // If it catches player, jump to random position
         if(bounding_box.intersects(player.bounding_box)) {
+            caught_player = true;
             jump_random();
         }
     }
 
         void jump_random() {
-        // Butano display coords are centered: [-width/2, width/2], [-height/2, height/2]
         int new_x = rng.get_int(MIN_X, MAX_X + 1);
         int new_y = rng.get_int(MIN_Y, MAX_Y + 1);
 
@@ -198,7 +201,6 @@ int main() {
     ScoreDisplay scoreDisplay = ScoreDisplay();
 
     // Create a player and initialize it
-    // TODO: we will move the initialization logic to a constructor.
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
     Enemy enemy = Enemy(-30, 22, bn::fixed(1.5), ENEMY_SIZE);
 
@@ -211,6 +213,7 @@ int main() {
             scoreDisplay.resetScore();
             player.sprite.set_x(44);
             player.sprite.set_y(22);
+            player.bounding_box = create_bounding_box(player.sprite, player.size);
         }
 
         // Update the scores and disaply them
