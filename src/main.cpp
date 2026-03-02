@@ -212,30 +212,41 @@ class Enemy {
 
 int main() {
     bn::core::init();
+    //vector of enemies.
+    bn::vector<Enemy, 6> enemies;
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
 
     // Create a player and initialize it
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
-    Enemy enemy = Enemy(-30, 22, bn::fixed(1.5), ENEMY_SIZE);
+    //Enemy enemy = Enemy(-30, 22, bn::fixed(1.5), ENEMY_SIZE);
+    enemies.push_back(Enemy(-70,  0, bn::fixed(1.2), ENEMY_SIZE));
+    enemies.push_back(Enemy( 60, 30, bn::fixed(1.5), ENEMY_SIZE));
+    enemies.push_back(Enemy(  0,-40, bn::fixed(1.0), ENEMY_SIZE));
 
     while(true) {
         player.update();
+        bool caught = false;
+
+    for(Enemy& enemy : enemies) {
         enemy.update(player);
 
-        // Reset the current score and player position if the player collides with enemy
-        if(enemy.bounding_box.intersects(player.bounding_box)) {
-            scoreDisplay.resetScore();
-            player.sprite.set_x(44);
-            player.sprite.set_y(22);
-            player.bounding_box = create_bounding_box(player.sprite, player.size);
+        if(enemy.caught_player) {
+            caught = true;
         }
+    }
+
+    if(caught) {
+        scoreDisplay.resetScore();
+
+        player.sprite.set_x(44);
+        player.sprite.set_y(22);
+        player.bounding_box = create_bounding_box(player.sprite, player.size);
+    }
 
         // Update the scores and disaply them
         scoreDisplay.update();
-        
-
         bn::core::update();
     }
 }
