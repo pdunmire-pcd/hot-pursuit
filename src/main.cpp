@@ -222,12 +222,38 @@ int main() {
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
     //Enemy enemy = Enemy(-30, 22, bn::fixed(1.5), ENEMY_SIZE);
     enemies.push_back(Enemy(-70,  0, bn::fixed(1.2), ENEMY_SIZE));
-    enemies.push_back(Enemy( 60, 30, bn::fixed(1.5), ENEMY_SIZE));
-    enemies.push_back(Enemy(  0,-40, bn::fixed(1.0), ENEMY_SIZE));
+    //commenting this out for wave 7 
+    // enemies.push_back(Enemy( 60, 30, bn::fixed(1.5), ENEMY_SIZE));
+    // enemies.push_back(Enemy(  0,-40, bn::fixed(1.0), ENEMY_SIZE));
+
+    // frame counter and spawn rate 
+    bn::random rng;
+    int frame_count = 0;
+
+    //can change to 90 , 150
+    static constexpr int SPAWN_EVERY_FRAMES = 120;
+
+
 
     while(true) {
         player.update();
-        bool caught = false;
+       
+        frame_count++;
+
+    //loop to increment frame count and spawn new enemy every SPAWN_EVERY_FRAMES 
+    if(frame_count % SPAWN_EVERY_FRAMES == 0 && enemies.size() < enemies.max_size())
+    {
+    int x = rng.get_int(MIN_X, MAX_X + 1);
+    int y = rng.get_int(MIN_Y, MAX_Y + 1);
+
+    // randomize speed a bit
+    //change 0.5 and (0,5)for faster enemies
+    bn::fixed spd = bn::fixed(0.4 + (rng.get_int(0, 4) / 10.0)); 
+
+    enemies.push_back(Enemy(x, y, spd, ENEMY_SIZE));
+}
+
+ bool caught = false;
 
     for(Enemy& enemy : enemies) {
         enemy.update(player);
@@ -243,6 +269,14 @@ int main() {
         player.sprite.set_x(44);
         player.sprite.set_y(22);
         player.bounding_box = create_bounding_box(player.sprite, player.size);
+
+          // Remove all enemies except one
+        while(enemies.size() > 1)
+        {
+            enemies.pop_back();
+        }
+
+        frame_count = 0;
     }
 
         // Update the scores and disaply them
