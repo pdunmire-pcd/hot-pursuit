@@ -2,6 +2,7 @@
 #include <bn_random.h>
 #include <bn_display.h>
 #include <bn_vector.h>
+#include "bn_music_items.h"
 
 #include "bounding_box.h"
 #include "score_display.h"
@@ -21,6 +22,8 @@ static constexpr int SPAWN_EVERY_FRAMES = 120; // Can change to 90 or 150 for di
 
 int main() {
     bn::core::init();
+
+       bn::music_items::arcade.play();
 
     bn::vector<Enemy, 6> enemies;
     ScoreDisplay scoreDisplay; // Create a new score display
