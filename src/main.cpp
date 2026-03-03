@@ -2,7 +2,7 @@
 #include <bn_random.h>
 #include <bn_display.h>
 #include <bn_vector.h>
-#include "bn_music_items.h"
+#include <bn_music_items.h>
 
 #include "bounding_box.h"
 #include "score_display.h"
