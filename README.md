@@ -1,5 +1,5 @@
 # hot-pursuit
-A Game Boy Advance arcade game where you play as a mouse trying to escape a relentless pack of chasing cats. Dodge the cats and survive as long as you can.
+A Game Boy Advance arcade game where you play as a mouse trying to escape a relentless pack of chasing cats. Dodge the cats, collect the cheese, and survive as long as you can.
 
 Controls:
 Up / Down / Left / Right – Move
