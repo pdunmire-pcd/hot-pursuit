@@ -6,6 +6,7 @@
 #include <bn_string.h>
 #include <bn_sprite_ptr.h>
 #include <bn_sprite_text_generator.h>
+#include <bn_random.h>
 
 #include "common_fixed_8x16_font.h"
 #include "bn_sprite_items_dot.h"
@@ -117,18 +118,34 @@ class Player {
                 sprite.set_x(sprite.x() - speed);
             }
             //logic for up and down
-                if(bn::keypad::up_held()) {
-                    sprite.set_y(sprite.y() - speed);
-                }
-                if(bn::keypad::down_held()) {
-                    sprite.set_y(sprite.y() + speed);
-                }
+            if(bn::keypad::up_held()) {
+                sprite.set_y(sprite.y() - speed);
+            }
+            if(bn::keypad::down_held()) {
+                sprite.set_y(sprite.y() + speed);
+            }
+
+            // logic for keeping player on the screen
+            bn::fixed half_w = bn::fixed(size.width() / 2);
+            bn::fixed half_h = bn::fixed(size.height() / 2);
+
+            if(sprite.x() < MIN_X + half_w)
+            sprite.set_x(MIN_X + half_w);
+
+            if(sprite.x() > MAX_X - half_w)
+            sprite.set_x(MAX_X - half_w);
+
+            if(sprite.y() < MIN_Y + half_h)
+            sprite.set_y(MIN_Y + half_h);
+
+            if(sprite.y() > MAX_Y - half_h)
+            sprite.set_y(MAX_Y - half_h);
 
             bounding_box = create_bounding_box(sprite, size);
         }
 
         // Create the sprite. This will be moved to a constructor
-        bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
+        bn::sprite_ptr sprite;
         bn::fixed speed; // The speed of the player
         bn::size size; // The width and height of the sprite
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
@@ -136,43 +153,134 @@ class Player {
 
 class Enemy {
     public:
-        Enemy(int starting_x, int starting_y, bn::size enemy_size) :
+        Enemy(int starting_x, int starting_y, bn::fixed enemy_speed, bn::size enemy_size) :
         sprite(bn::sprite_items::square.create_sprite(starting_x, starting_y)),
+        speed(enemy_speed),
         size(enemy_size),
-        bounding_box(create_bounding_box(sprite, size))
+        bounding_box(create_bounding_box(sprite, size)),
+        rng()
         {}
 
-        bn::sprite_ptr sprite= bn::sprite_items::square.create_sprite(); // The sprite for the enemy
+        bool caught_player = false;
+
+         // Move toward player, update bounding box, and jump when catching player
+    void update(Player& player) {
+        caught_player = false;
+        // Move in x direction toward player
+        if(sprite.x() < player.sprite.x()) {
+            sprite.set_x(sprite.x() + speed);
+        } else if(sprite.x() > player.sprite.x()) {
+            sprite.set_x(sprite.x() - speed);
+        }
+
+         // Move in y direction toward player
+        if(sprite.y() < player.sprite.y()) {
+            sprite.set_y(sprite.y() + speed);
+        } else if(sprite.y() > player.sprite.y()) {
+            sprite.set_y(sprite.y() - speed);
+        }
+
+         // Update bounding box after moving
+        bounding_box = create_bounding_box(sprite, size);
+
+        // If it catches player, jump to random position
+        if(bounding_box.intersects(player.bounding_box)) {
+            caught_player = true;
+            jump_random();
+        }
+    }
+
+        void jump_random() {
+        int new_x = rng.get_int(MIN_X, MAX_X + 1);
+        int new_y = rng.get_int(MIN_Y, MAX_Y + 1);
+
+        sprite.set_x(new_x);
+        sprite.set_y(new_y);
+
+        bounding_box = create_bounding_box(sprite, size);
+    }
+
+        bn::sprite_ptr sprite;
+        bn::fixed speed; // The speed of the enemy
         bn::size size; // The width and height of the sprite
         bn::rect bounding_box; // The rectangle around the sprite for checking collision
+
+        private:
+    bn::random rng; // Random number generator for jumping to random location when catching player
 
 };
 
 int main() {
     bn::core::init();
+    //vector of enemies.
+    bn::vector<Enemy, 6> enemies;
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
 
     // Create a player and initialize it
-    // TODO: we will move the initialization logic to a constructor.
     Player player = Player(22, 44, 3.5, PLAYER_SIZE);
-    Enemy enemy = Enemy(-30, 22, ENEMY_SIZE);
+    //Enemy enemy = Enemy(-30, 22, bn::fixed(1.5), ENEMY_SIZE);
+    enemies.push_back(Enemy(-70,  0, bn::fixed(1.2), ENEMY_SIZE));
+    //commenting this out for wave 7 
+    // enemies.push_back(Enemy( 60, 30, bn::fixed(1.5), ENEMY_SIZE));
+    // enemies.push_back(Enemy(  0,-40, bn::fixed(1.0), ENEMY_SIZE));
+
+    // frame counter and spawn rate 
+    bn::random rng;
+    int frame_count = 0;
+
+    //can change to 90 , 150
+    static constexpr int SPAWN_EVERY_FRAMES = 120;
+
+
 
     while(true) {
         player.update();
+       
+        frame_count++;
 
-        // Reset the current score and player position if the player collides with enemy
-        if(enemy.bounding_box.intersects(player.bounding_box)) {
-            scoreDisplay.resetScore();
-            player.sprite.set_x(44);
-            player.sprite.set_y(22);
+    //loop to increment frame count and spawn new enemy every SPAWN_EVERY_FRAMES 
+    if(frame_count % SPAWN_EVERY_FRAMES == 0 && enemies.size() < enemies.max_size())
+    {
+    int x = rng.get_int(MIN_X, MAX_X + 1);
+    int y = rng.get_int(MIN_Y, MAX_Y + 1);
+
+    // randomize speed a bit
+    //change 0.5 and (0,5)for faster enemies
+    bn::fixed spd = bn::fixed(0.4 + (rng.get_int(0, 4) / 10.0)); 
+
+    enemies.push_back(Enemy(x, y, spd, ENEMY_SIZE));
+}
+
+ bool caught = false;
+
+    for(Enemy& enemy : enemies) {
+        enemy.update(player);
+
+        if(enemy.caught_player) {
+            caught = true;
         }
+    }
+
+    if(caught) {
+        scoreDisplay.resetScore();
+
+        player.sprite.set_x(44);
+        player.sprite.set_y(22);
+        player.bounding_box = create_bounding_box(player.sprite, player.size);
+
+          // Remove all enemies except one
+        while(enemies.size() > 1)
+        {
+            enemies.pop_back();
+        }
+
+        frame_count = 0;
+    }
 
         // Update the scores and disaply them
         scoreDisplay.update();
-        
-
         bn::core::update();
     }
 }
