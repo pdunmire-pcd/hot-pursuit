@@ -2,7 +2,7 @@
 #include <bn_random.h>
 #include <bn_display.h>
 #include <bn_vector.h>
-// #include <bn_music_items.h>
+//#include "bn_music_items.h"
 
 #include "bounding_box.h"
 #include "score_display.h"
@@ -28,7 +28,7 @@ static constexpr bn::fixed BOOSTED_SPEED = bn::fixed(6.0);
 int main() {
     bn::core::init();
 
-    //    bn::music_items::arcade.play();
+      // bn::music_items::arcade.play();
 
     bn::vector<Enemy, 6> enemies;
     ScoreDisplay scoreDisplay;
